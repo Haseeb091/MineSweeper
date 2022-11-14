@@ -9,7 +9,7 @@ public class Tile {
 
     private boolean isFlagged=false;
 
-    public Tile(String Value){
+    public Tile(String value){
         this.value=value;
 
     }
