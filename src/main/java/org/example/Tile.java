@@ -5,21 +5,21 @@ public class Tile {
     private boolean isVisible=false;
     private boolean isMine=false;
 
-    private String value;
+    private int value;
 
     private boolean isFlagged=false;
 
-    public Tile(String value){
+    public Tile(int value){
         this.value=value;
 
     }
 
-    public void setValue(String value){
+    public void setValue(int value){
         this.value=value;
 
     }
 
-    public String getValue(){
+    public int getValue(){
         return value;
 
     }

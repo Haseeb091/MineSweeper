@@ -19,7 +19,14 @@ public class Grid {
 
 
     }
-
+private void flag(){
+        if(!grid[0][0].getisVisible()) {
+            grid[0][0].setisFlagged(true);
+        }
+}
+    private void unFlag(){
+        grid[0][0].setisFlagged(false);
+    }
     private void initilize(){
         // depending on size choose number of mines
         // loop thought grid
@@ -30,22 +37,19 @@ public class Grid {
 
             for (int colI=0;colI<col;colI++){
 
-                grid[rowI][colI]=new Tile("s");
+                grid[rowI][colI]=new Tile(0);
             }
 
 
         }
 
         grid[0][0].setisMine(true);
-        setTileVisible(0,0);
+        setTilesVisible(0,0);
 
 
         generateNumbers();
         populateEmpties();
-        displayEmpties(0,3);
-        displayEmpties(0,1);
-        displayEmpties(1,1);
-        displayEmpties(1,0);
+
         System.out.println( emptyPos.size());
 }
 
@@ -88,7 +92,7 @@ private void generateNumbers(){
                     minesCount++;
                 }
                 if(minesCount>0){
-                    grid[rowI][colI].setValue(""+minesCount);
+                    grid[rowI][colI].setValue(minesCount);
                    // grid[rowI][colI].setisVisible(true);
                 }
 
@@ -115,8 +119,30 @@ private void populateEmpties(){
 
     }
 }
+public void setTilesVisible(int tempRow, int tempCol){
+        if(grid[tempRow][tempCol].getisMine()){
+            grid[tempRow][tempCol].setisVisible(true);
 
-private void setTileVisible(int temprow,int tempCol){
+        }else{
+            if(grid[tempRow][tempCol].getValue()==0){
+                 displayEmpties( tempRow,tempCol);
+            }else {
+                setNonMineTileVisible(tempRow, tempCol);
+            }
+        }
+
+}
+public boolean isMine(int temprow, int tempCol){
+    return grid[temprow][tempCol].getisMine();
+
+
+}
+public boolean gameWon(){
+
+        return emptyPos.size()==0;
+}
+private void setNonMineTileVisible(int temprow, int tempCol){
+
     grid[temprow][tempCol].setisVisible(true);
     System.out.println(emptyPos.size());
     emptyPos.remove(new Point(temprow,tempCol));
@@ -129,29 +155,29 @@ private void displayEmpties(int tempRow,int tempCol){
 
 
    queue.add(new int[]{tempRow, tempCol});
-    setTileVisible(tempRow,tempCol);
+    setNonMineTileVisible(tempRow,tempCol);
 
     while (queue.size()!=0){
         int[] cordinates=queue.get(0);
 
         if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0]-1,cordinates[1]) ){
-            setTileVisible(cordinates[0]-1,cordinates[1]);
+            setNonMineTileVisible(cordinates[0]-1,cordinates[1]);
             queue.add(new int[]{cordinates[0]-1, cordinates[1]});
 
         }
         if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0]+1,cordinates[1]) ){
-            setTileVisible(cordinates[0]+1,cordinates[1]);
+            setNonMineTileVisible(cordinates[0]+1,cordinates[1]);
           //  grid[cordinates[0]+1][cordinates[1]].setisVisible(true);
             queue.add(new int[]{cordinates[0]+1, cordinates[1]});
         }
         if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0],cordinates[1]-1) ){
-            setTileVisible(cordinates[0],cordinates[1]-1);
+            setNonMineTileVisible(cordinates[0],cordinates[1]-1);
            // grid[cordinates[0]][cordinates[1]-1].setisVisible(true);
             queue.add(new int[]{cordinates[0], cordinates[1]-1});
 
         }
         if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0],cordinates[1]+1) ){
-            setTileVisible(cordinates[0],cordinates[1]+1);
+            setNonMineTileVisible(cordinates[0],cordinates[1]+1);
            // grid[cordinates[0]][cordinates[1]+1].setisVisible(true);
             queue.add(new int[]{cordinates[0], cordinates[1]+1});
         }
@@ -164,7 +190,7 @@ private void displayEmpties(int tempRow,int tempCol){
 private boolean checkIfNotMineAndNotVisibleAndNotNumbers(int tempRow,int tempCol){
 
     if(checkIfInIndex(tempRow,row)&&checkIfInIndex(tempCol,col)&& !grid[tempRow][tempCol].getisMine()
-            &&!grid[tempRow][tempCol].getisVisible()&&grid[tempRow][tempCol].getValue()=="s" ){
+            &&!grid[tempRow][tempCol].getisVisible()&&grid[tempRow][tempCol].getValue()==0 ){
         return true;
 
 
