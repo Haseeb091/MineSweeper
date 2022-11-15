@@ -52,7 +52,7 @@ public class Minesweeper {
         grid.printAll();
 
     }
-private void makeTileVisible(){
+private void getCordinates(char i){
         int rowCordinate=-1;
         int colCordinate=-1;
         while (rowCordinate<0||rowCordinate>rowMax-1){
@@ -64,23 +64,30 @@ private void makeTileVisible(){
             rowCordinate = myObj.nextInt();
         }
 
-    while (colCordinate<0||colCordinate>rowMax-1){
-        System.out.println("Please enter a valid row for tile between 0-"+(colMax-1));
+    while (colCordinate<0||colCordinate>colMax-1){
+        System.out.println("Please enter a valid col for tile between 0-"+(colMax-1));
         while (!myObj.hasNextInt()) {
             myObj.next();
-            System.out.println("Please enter a valid row for tile between 0-"+(colMax-1));
+            System.out.println("Please enter a valid col for tile between 0-"+(colMax-1));
         }
         colCordinate = myObj.nextInt();
     }
-    grid.setTilesVisible(rowCordinate,colCordinate);
-    grid.printAll();
-    if(grid.isMine(rowCordinate,colCordinate)){
-        gameLost=true;
+    if(i=='v') {
+        grid.setTilesVisible(rowCordinate, colCordinate);
+        grid.printAll();
+        if (grid.isMine(rowCordinate, colCordinate)) {
+            gameLost = true;
 
-    } else if (grid.gameWon()) {
-        gameWon=true;
+        } else if (grid.gameWon()) {
+            gameWon = true;
+        }
+    } else if (i=='f') {
+        grid.flag(rowCordinate,colCordinate);
+        grid.printAll();
+    } else if (i=='u') {
+        grid.unFlag(rowCordinate,colCordinate);
+        grid.printAll();
     }
-
 }
     public void startGame(){
         setupRowAndCols();
@@ -91,10 +98,10 @@ private void makeTileVisible(){
             while (!validInput) {
                 System.out.println("v-Make tile visible, f-flag, u-unflag ");
                 char c = myObj.next().charAt(0);
-                if(c=='v'){
+                if(c=='v'||c=='f'||c=='u'){
 
-                    System.out.println("char v");
-                    makeTileVisible();
+
+                    getCordinates(c);
                     validInput=true;
                    // gameWon=true;
                 }

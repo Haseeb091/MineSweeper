@@ -19,13 +19,13 @@ public class Grid {
 
 
     }
-private void flag(){
-        if(!grid[0][0].getisVisible()) {
-            grid[0][0].setisFlagged(true);
+public void flag(int rowTemp,int colTemp){
+        if(!grid[rowTemp][colTemp].getisVisible()) {
+            grid[rowTemp][colTemp].setisFlagged(true);
         }
 }
-    private void unFlag(){
-        grid[0][0].setisFlagged(false);
+    public void unFlag(int rowTemp,int colTemp){
+        grid[rowTemp][colTemp].setisFlagged(false);
     }
     private void initilize(){
         // depending on size choose number of mines
@@ -44,7 +44,7 @@ private void flag(){
         }
 
         grid[0][0].setisMine(true);
-        setTilesVisible(0,0);
+       // setTilesVisible(0,0);
 
 
         generateNumbers();
@@ -206,17 +206,23 @@ private boolean checkIfInIndex(int val,int indexMax){
         }
 }
     public void printAll(){
+        System.out.print("  ");
+        for (int colI=0;colI<col;colI++){
+            System.out.print(colI+" ");
 
-
+        }
+        System.out.println();
         for (int rowI=0;rowI<row;rowI++){
-            System.out.println();
+            System.out.print(rowI+"|");
             for (int colI=0;colI<col;colI++){
 
                 grid[rowI][colI].print();
                 System.out.print(",");
             }
 
+            System.out.println();
 
         }
+        System.out.println();
     }
 }
