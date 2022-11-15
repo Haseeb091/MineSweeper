@@ -43,16 +43,44 @@ public void flag(int rowTemp,int colTemp){
 
         }
 
-        grid[0][0].setisMine(true);
+        //grid[0][0].setisMine(true);
        // setTilesVisible(0,0);
 
 
-        generateNumbers();
-        populateEmpties();
+
 
         System.out.println( emptyPos.size());
 }
 
+public void firstMoveSetup(int rowC,int colC){
+grid[rowC][colC].setisVisible(true);
+    genMines();
+    generateNumbers();
+    populateEmpties();
+}
+    private void genMines(){
+        for (int rowI=0;rowI<row;rowI++){
+
+            for (int colI=0;colI<col;colI++){
+                if(!grid[rowI][colI].getisVisible()){
+
+                    if( Math.random()<=0.20){
+                        grid[rowI][colI].setisMine(true);
+
+
+                    }
+                }
+
+
+            }
+
+
+
+        }
+
+
+
+    }
 private void generateNumbers(){
     for (int rowI=0;rowI<row;rowI++){
 
@@ -110,7 +138,7 @@ private void populateEmpties(){
     for (int rowI=0;rowI<row;rowI++){
 
         for (int colI=0;colI<col;colI++){
-            if(!grid[rowI][colI].getisMine()) {
+            if(!grid[rowI][colI].getisMine()&&!grid[rowI][colI].getisVisible()) {
                 emptyPos.add(new Point(rowI, colI));
             }
 

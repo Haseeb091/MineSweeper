@@ -8,6 +8,7 @@ public class Minesweeper {
     private boolean gameWon;
     Scanner myObj ;
     private boolean gameLost;
+    private boolean firstMove=true;
     int rowMax=0;
     int colMax=0;
     public Minesweeper(){
@@ -73,13 +74,19 @@ private void getCordinates(char i){
         colCordinate = myObj.nextInt();
     }
     if(i=='v') {
-        grid.setTilesVisible(rowCordinate, colCordinate);
-        grid.printAll();
-        if (grid.isMine(rowCordinate, colCordinate)) {
-            gameLost = true;
+        if(firstMove){
+            grid.firstMoveSetup(rowCordinate,colCordinate);
+            grid.printAll();
+            firstMove=false;
+        }else {
+            grid.setTilesVisible(rowCordinate, colCordinate);
+            grid.printAll();
+            if (grid.isMine(rowCordinate, colCordinate)) {
+                gameLost = true;
 
-        } else if (grid.gameWon()) {
-            gameWon = true;
+            } else if (grid.gameWon()) {
+                gameWon = true;
+            }
         }
     } else if (i=='f') {
         grid.flag(rowCordinate,colCordinate);
