@@ -9,62 +9,87 @@ public class Grid {
     private Tile[][] grid;
     private int row;
     private int col;
-    private Set<Point> emptyPos = new HashSet<Point>();
-    public Grid(int row,int col){
-        this.row=row;
-        this.col=col;
-        grid= new Tile[row][col];
+    private Set<Point> emptyPos = new HashSet<Point>();// holds the empty position and when size is 0 game won
+
+    public Grid(int row, int col) {
+        this.row = row;
+        this.col = col;
+        grid = new Tile[row][col];
         initilize();
         // intitaze grid
 
 
     }
-public void flag(int rowTemp,int colTemp){
-        if(!grid[rowTemp][colTemp].getisVisible()) {
+
+    //iff the tile is not visible then you can flag it
+    public void flag(int rowTemp, int colTemp) {
+        if (!grid[rowTemp][colTemp].getisVisible()) {
             grid[rowTemp][colTemp].setisFlagged(true);
         }
-}
-    public void unFlag(int rowTemp,int colTemp){
+    }
+
+    public boolean getIsFlagged(int rowTemp, int colTemp) {
+
+        return grid[rowTemp][colTemp].getisFlagged();
+    }
+
+    // removing flag - so you can make tile visible later
+    public void unFlag(int rowTemp, int colTemp) {
         grid[rowTemp][colTemp].setisFlagged(false);
     }
-    private void initilize(){
-        // depending on size choose number of mines
-        // loop thought grid
-       // intialize tiles and randomly place mines
-        //
 
-        for (int rowI=0;rowI<row;rowI++){
+    //initializes 2d array with tiles which have no mines
+    private void initilize() {
 
-            for (int colI=0;colI<col;colI++){
 
-                grid[rowI][colI]=new Tile(0);
+        for (int rowI = 0; rowI < row; rowI++) {
+
+            for (int colI = 0; colI < col; colI++) {
+
+                grid[rowI][colI] = new Tile(0);
             }
 
 
         }
 
-        //grid[0][0].setisMine(true);
-       // setTilesVisible(0,0);
+    }
+
+    //once you loose then all mines are displayed
+    public void showAllMines() {
+        for (int rowI = 0; rowI < row; rowI++) {
+
+            for (int colI = 0; colI < col; colI++) {
+                if (grid[rowI][colI].getisMine()) {
+                    setTilesVisible(rowI, colI);
+
+                }
+
+            }
 
 
+        }
 
 
-        System.out.println( emptyPos.size());
-}
+    }
 
-public void firstMoveSetup(int rowC,int colC){
-grid[rowC][colC].setisVisible(true);
-    genMines();
-    generateNumbers();
-    populateEmpties();
-}
-    private void genMines(){
-        for (int rowI=0;rowI<row;rowI++){
+    //there are no mines when first move is made
+    // then the mines are generated and numbers and the empty position set is added to
+    public void firstMoveSetup(int rowC, int colC) {
+        grid[rowC][colC].setisVisible(true);
+        genMines();
+        generateNumbers();
+        populateEmpties();
+        setTilesVisible(rowC, colC);// insures if first pos has no mines or numbers all adacent empty pos are revieled
+    }
 
-            for (int colI=0;colI<col;colI++){
-                if(!grid[rowI][colI].getisVisible()){
+    // randomly generates mines with the chance of 20 percent
+    private void genMines() {
+        for (int rowI = 0; rowI < row; rowI++) {
 
-                    if( Math.random()<=0.20){
+            for (int colI = 0; colI < col; colI++) {
+                if (!grid[rowI][colI].getisVisible()) {
+
+                    if (Math.random() <= 0.20) {
                         grid[rowI][colI].setisMine(true);
 
 
@@ -75,174 +100,187 @@ grid[rowC][colC].setisVisible(true);
             }
 
 
-
         }
 
 
-
     }
-private void generateNumbers(){
-    for (int rowI=0;rowI<row;rowI++){
 
-        for (int colI=0;colI<col;colI++){
-            if(!grid[rowI][colI].getisMine()) {
-                int minesCount = 0;
-                if(checkIfInIndex(rowI+1,row) && checkIfInIndex(colI,col)&& grid[rowI+1][colI].getisMine() ){
+    // checks all positions to get surounding number of mines and sets the value in tile
+    private void generateNumbers() {
+        for (int rowI = 0; rowI < row; rowI++) {
 
-                    minesCount++;
-                }
-                if(checkIfInIndex(rowI-1,row) && checkIfInIndex(colI,col)&& grid[rowI-1][colI].getisMine() ){
+            for (int colI = 0; colI < col; colI++) {
+                if (!grid[rowI][colI].getisMine()) {
+                    int minesCount = 0;
+                    if (checkIfInIndex(rowI + 1, row) && checkIfInIndex(colI, col) && grid[rowI + 1][colI].getisMine()) {
 
-                    minesCount++;
-                }
-                if(checkIfInIndex(rowI,row) && checkIfInIndex(colI-1,col)&& grid[rowI][colI-1].getisMine() ){
+                        minesCount++;
+                    }
+                    if (checkIfInIndex(rowI - 1, row) && checkIfInIndex(colI, col) && grid[rowI - 1][colI].getisMine()) {
 
-                    minesCount++;
-                }
-                if(checkIfInIndex(rowI,row) && checkIfInIndex(colI+1,col)&& grid[rowI][colI+1].getisMine() ){
+                        minesCount++;
+                    }
+                    if (checkIfInIndex(rowI, row) && checkIfInIndex(colI - 1, col) && grid[rowI][colI - 1].getisMine()) {
 
-                    minesCount++;
-                }//here
-                if(checkIfInIndex(rowI+1,row) && checkIfInIndex(colI+1,col)&& grid[rowI+1][colI+1].getisMine() ){
+                        minesCount++;
+                    }
+                    if (checkIfInIndex(rowI, row) && checkIfInIndex(colI + 1, col) && grid[rowI][colI + 1].getisMine()) {
 
-                    minesCount++;
-                }
-                if(checkIfInIndex(rowI-1,row) && checkIfInIndex(colI-1,col)&& grid[rowI-1][colI-1].getisMine() ){
+                        minesCount++;
+                    }//here
+                    if (checkIfInIndex(rowI + 1, row) && checkIfInIndex(colI + 1, col) && grid[rowI + 1][colI + 1].getisMine()) {
 
-                    minesCount++;
-                }
-                if(checkIfInIndex(rowI-1,row) && checkIfInIndex(colI+1,col)&& grid[rowI-1][colI+1].getisMine() ){
+                        minesCount++;
+                    }
+                    if (checkIfInIndex(rowI - 1, row) && checkIfInIndex(colI - 1, col) && grid[rowI - 1][colI - 1].getisMine()) {
 
-                    minesCount++;
-                }
-                if(checkIfInIndex(rowI+1,row) && checkIfInIndex(colI-1,col)&& grid[rowI+1][colI-1].getisMine() ){
+                        minesCount++;
+                    }
+                    if (checkIfInIndex(rowI - 1, row) && checkIfInIndex(colI + 1, col) && grid[rowI - 1][colI + 1].getisMine()) {
 
-                    minesCount++;
-                }
-                if(minesCount>0){
-                    grid[rowI][colI].setValue(minesCount);
-                   // grid[rowI][colI].setisVisible(true);
+                        minesCount++;
+                    }
+                    if (checkIfInIndex(rowI + 1, row) && checkIfInIndex(colI - 1, col) && grid[rowI + 1][colI - 1].getisMine()) {
+
+                        minesCount++;
+                    }
+                    if (minesCount > 0) {
+                        grid[rowI][colI].setValue(minesCount);
+                        // grid[rowI][colI].setisVisible(true);
+                    }
+
                 }
 
             }
 
-        }
 
+        }
 
     }
 
-}
+    // populating set of empty position -ie not mines
+    //used to see if game has been won
+    private void populateEmpties() {
 
-private void populateEmpties(){
+        for (int rowI = 0; rowI < row; rowI++) {
 
-    for (int rowI=0;rowI<row;rowI++){
+            for (int colI = 0; colI < col; colI++) {
+                if (!grid[rowI][colI].getisMine() && !grid[rowI][colI].getisVisible()) {
+                    emptyPos.add(new Point(rowI, colI));
+                }
 
-        for (int colI=0;colI<col;colI++){
-            if(!grid[rowI][colI].getisMine()&&!grid[rowI][colI].getisVisible()) {
-                emptyPos.add(new Point(rowI, colI));
             }
 
+
         }
-
-
     }
-}
-public void setTilesVisible(int tempRow, int tempCol){
-        if(grid[tempRow][tempCol].getisMine()){
+
+    // set method to make tiles visible treated diffrently depending on if there is a mine, number>0, 0
+    public void setTilesVisible(int tempRow, int tempCol) {
+        if (grid[tempRow][tempCol].getisMine()) {
             grid[tempRow][tempCol].setisVisible(true);
 
-        }else{
-            if(grid[tempRow][tempCol].getValue()==0){
-                 displayEmpties( tempRow,tempCol);
-            }else {
+        } else {
+            if (grid[tempRow][tempCol].getValue() == 0) {
+                displayEmpties(tempRow, tempCol);// will set this pos to visible aswell
+            } else {
                 setNonMineTileVisible(tempRow, tempCol);
             }
         }
 
-}
-public boolean isMine(int temprow, int tempCol){
-    return grid[temprow][tempCol].getisMine();
+    }
 
+    public boolean isMine(int temprow, int tempCol) {
+        return grid[temprow][tempCol].getisMine();
 
-}
-public boolean gameWon(){
-
-        return emptyPos.size()==0;
-}
-private void setNonMineTileVisible(int temprow, int tempCol){
-
-    grid[temprow][tempCol].setisVisible(true);
-    System.out.println(emptyPos.size());
-    emptyPos.remove(new Point(temprow,tempCol));
-    System.out.println("new size "+emptyPos.size());
-}
-private void displayEmpties(int tempRow,int tempCol){
-
-
-    ArrayList<int[]> queue = new ArrayList<int[]>();
-
-
-   queue.add(new int[]{tempRow, tempCol});
-    setNonMineTileVisible(tempRow,tempCol);
-
-    while (queue.size()!=0){
-        int[] cordinates=queue.get(0);
-
-        if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0]-1,cordinates[1]) ){
-            setNonMineTileVisible(cordinates[0]-1,cordinates[1]);
-            queue.add(new int[]{cordinates[0]-1, cordinates[1]});
-
-        }
-        if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0]+1,cordinates[1]) ){
-            setNonMineTileVisible(cordinates[0]+1,cordinates[1]);
-          //  grid[cordinates[0]+1][cordinates[1]].setisVisible(true);
-            queue.add(new int[]{cordinates[0]+1, cordinates[1]});
-        }
-        if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0],cordinates[1]-1) ){
-            setNonMineTileVisible(cordinates[0],cordinates[1]-1);
-           // grid[cordinates[0]][cordinates[1]-1].setisVisible(true);
-            queue.add(new int[]{cordinates[0], cordinates[1]-1});
-
-        }
-        if(checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0],cordinates[1]+1) ){
-            setNonMineTileVisible(cordinates[0],cordinates[1]+1);
-           // grid[cordinates[0]][cordinates[1]+1].setisVisible(true);
-            queue.add(new int[]{cordinates[0], cordinates[1]+1});
-        }
-        queue.remove(0);
 
     }
 
+    public boolean gameWon() {
 
-}
-private boolean checkIfNotMineAndNotVisibleAndNotNumbers(int tempRow,int tempCol){
+        return emptyPos.size() == 0;
+    }
 
-    if(checkIfInIndex(tempRow,row)&&checkIfInIndex(tempCol,col)&& !grid[tempRow][tempCol].getisMine()
-            &&!grid[tempRow][tempCol].getisVisible()&&grid[tempRow][tempCol].getValue()==0 ){
-        return true;
+    //sets to visible and removes from set
+    private void setNonMineTileVisible(int temprow, int tempCol) {
+
+        grid[temprow][tempCol].setisVisible(true);
+
+        emptyPos.remove(new Point(temprow, tempCol));
+
+    }
+
+    private void displayEmpties(int tempRow, int tempCol) {
+
+
+        ArrayList<int[]> queue = new ArrayList<int[]>();
+
+
+        queue.add(new int[]{tempRow, tempCol});
+        setNonMineTileVisible(tempRow, tempCol);
+        //goes through all adacent tiles and addes them on to list if there not visible and dont have mine or number >0
+        // used to display all empty tiles
+
+        while (queue.size() != 0) {
+            int[] cordinates = queue.get(0);
+
+            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0] - 1, cordinates[1])) {
+
+                setNonMineTileVisible(cordinates[0] - 1, cordinates[1]);
+                queue.add(new int[]{cordinates[0] - 1, cordinates[1]});
+
+            }
+            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0] + 1, cordinates[1])) {
+                setNonMineTileVisible(cordinates[0] + 1, cordinates[1]);
+                queue.add(new int[]{cordinates[0] + 1, cordinates[1]});
+            }
+            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0], cordinates[1] - 1)) {
+                setNonMineTileVisible(cordinates[0], cordinates[1] - 1);
+                queue.add(new int[]{cordinates[0], cordinates[1] - 1});
+
+            }
+            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0], cordinates[1] + 1)) {
+                setNonMineTileVisible(cordinates[0], cordinates[1] + 1);
+                queue.add(new int[]{cordinates[0], cordinates[1] + 1});
+            }
+            queue.remove(0);
+
+        }
 
 
     }
-    return false;
-}
-private boolean checkIfInIndex(int val,int indexMax){
 
-        if (val>=0&& val<indexMax){
+    private boolean checkIfNotMineAndNotVisibleAndNotNumbers(int tempRow, int tempCol) {
+
+        if (checkIfInIndex(tempRow, row) && checkIfInIndex(tempCol, col) && !grid[tempRow][tempCol].getisMine()
+                && !grid[tempRow][tempCol].getisVisible() && grid[tempRow][tempCol].getValue() == 0) {
             return true;
-        }else {
+
+
+        }
+        return false;
+    }
+
+    private boolean checkIfInIndex(int val, int indexMax) {
+        //avoiding index out of bounds
+
+        if (val >= 0 && val < indexMax) {
+            return true;
+        } else {
             return false;
         }
-}
-    public void printAll(){
+    }
+
+    public void printAll() {
         System.out.print("  ");
-        for (int colI=0;colI<col;colI++){
-            System.out.print(colI+" ");
+        for (int colI = 0; colI < col; colI++) {
+            System.out.print(colI + " ");
 
         }
         System.out.println();
-        for (int rowI=0;rowI<row;rowI++){
-            System.out.print(rowI+"|");
-            for (int colI=0;colI<col;colI++){
+        for (int rowI = 0; rowI < row; rowI++) {
+            System.out.print(rowI + "|");
+            for (int colI = 0; colI < col; colI++) {
 
                 grid[rowI][colI].print();
                 System.out.print(",");
