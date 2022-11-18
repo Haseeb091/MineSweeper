@@ -6,7 +6,7 @@ public class Minesweeper {
     private Grid grid;
 
     private boolean gameWon;
-    private Scanner scanner;
+    private final Scanner scanner;
     private boolean gameLost;
     private boolean firstMove = true;
     private int rowMax = 0;
@@ -24,8 +24,8 @@ public class Minesweeper {
         int row = 0;
         int col = 0;
         //insures numbers are within range
-        while (row < 5 || row > 100) {
-            System.out.println("please Enter Number of rowsbetween 5-100");
+        while (row < 5 || row > 30) {
+            System.out.println("please Enter Number of rows between 5-30");
             //if there is no int then loop until they enter one
             while (!scanner.hasNextInt()) {
                 scanner.next();
@@ -34,8 +34,8 @@ public class Minesweeper {
             row = scanner.nextInt();
 
         }
-        while (col < 5 || col > 100) {
-            System.out.println("please Enter Number of columns between 5-100");
+        while (col < 5 || col > 30) {
+            System.out.println("please Enter Number of columns between 5-30");
             while (!scanner.hasNextInt()) {
                 scanner.next();
                 System.out.println("Please enter a valid  Number of columns");
@@ -45,48 +45,48 @@ public class Minesweeper {
         }
 
 
-        rowMax = row;
-        colMax = col;
-        grid = new Grid(row, col);
+        this.rowMax = row;
+        this.colMax = col;
+        grid = new Grid(this.rowMax, this.colMax);
         grid.printAll();
 
     }
 
-    private void getCordinates(char value) {
-        int rowCordinate = -1;//-1 because it would never enter loop
-        int colCordinate = -1;
-        while (rowCordinate < 0 || rowCordinate > rowMax - 1) {
+    private void getCoordinates(char value) {
+        int rowCoordinate = -1;//-1 because it would never enter loop
+        int colCoordinate = -1;
+        while (rowCoordinate < 0 || rowCoordinate > rowMax - 1) {
             System.out.println("Please enter a valid row for tile between 0-" + (rowMax - 1));
             while (!scanner.hasNextInt()) {
                 scanner.next();
                 System.out.println("Please enter a valid row for tile between 0-" + (rowMax - 1));
             }
-            rowCordinate = scanner.nextInt();
+            rowCoordinate = scanner.nextInt();
         }
 
-        while (colCordinate < 0 || colCordinate > colMax - 1) {
+        while (colCoordinate < 0 || colCoordinate > colMax - 1) {
             System.out.println("Please enter a valid col for tile between 0-" + (colMax - 1));
             while (!scanner.hasNextInt()) {
                 scanner.next();
                 System.out.println("Please enter a valid col for tile between 0-" + (colMax - 1));
             }
-            colCordinate = scanner.nextInt();
+            colCoordinate = scanner.nextInt();
         }
-        optionsSelector(rowCordinate, colCordinate, value);// depending on value a diffrent method is called to handle input
+        optionsSelector(rowCoordinate, colCoordinate, value);// depending on value a different method is called to handle input
 
     }
 
-    private void optionsSelector(int rowCordinate, int colCordinate, char value) {
+    private void optionsSelector(int rowCoordinate, int colCoordinate, char value) {
         if (value == 'v') {
-            if (!grid.getIsFlagged(rowCordinate, colCordinate)) {
+            if (!grid.getIsFlagged(rowCoordinate, colCoordinate)) {
                 if (firstMove) {
-                    grid.firstMoveSetup(rowCordinate, colCordinate);
+                    grid.firstMoveSetup(rowCoordinate, colCoordinate);
                     firstMove = false;
                     grid.printAll();
                 } else {
-                    grid.setTilesVisible(rowCordinate, colCordinate);
+                    grid.setTilesVisible(rowCoordinate, colCoordinate);
 
-                    if (grid.isMine(rowCordinate, colCordinate)) {
+                    if (grid.isMine(rowCoordinate, colCoordinate)) {
 
                         grid.showAllMines();
 
@@ -102,10 +102,10 @@ public class Minesweeper {
                 grid.printAll();
             }
         } else if (value == 'f') {
-            grid.flag(rowCordinate, colCordinate);
+            grid.flag(rowCoordinate, colCoordinate);
             grid.printAll();
         } else if (value == 'u') {
-            grid.unFlag(rowCordinate, colCordinate);
+            grid.unFlag(rowCoordinate, colCoordinate);
             grid.printAll();
         }
 
@@ -115,7 +115,7 @@ public class Minesweeper {
         setupRowAndCols();
 
         while (!gameWon && !gameLost) {
-            String moveChoice = "";
+
             boolean validInput = false;
             while (!validInput) {
                 System.out.println("v-Make tile visible, f-flag, u-unflag ");
@@ -123,7 +123,7 @@ public class Minesweeper {
                 if (c == 'v' || c == 'f' || c == 'u') {
 
 
-                    getCordinates(c);
+                    getCoordinates(c);
                     validInput = true;
                     // gameWon=true;
                 }
