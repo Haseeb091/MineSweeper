@@ -2,16 +2,18 @@ package org.example;
 
 public class Tile {
 
-    private boolean isVisible=false;
-    private boolean isMine=false;
+    private boolean isVisible;
+    private boolean isMine;
 
     private int value;
 
-    private boolean isFlagged=false;
+    private boolean isFlagged;
 
     public Tile(int value){
         this.value=value;
-
+        isVisible=false;
+        isFlagged=false;
+        isMine=false;
     }
 
     public void setValue(int value){
