@@ -83,14 +83,15 @@ public class Grid {
 
     // randomly generates mines with the chance of 20 percent
     private void genMines() {
+        int minesCount=0;
         for (int rowI = 0; rowI < row; rowI++) {
 
             for (int colI = 0; colI < col; colI++) {
                 if (!grid[rowI][colI].getisVisible()) {
 
-                    if (Math.random() <= 0.20) {
+                    if (Math.random() <= 0.05) {
                         grid[rowI][colI].setisMine(true);
-
+                        minesCount++;
 
                     }
                 }
@@ -100,7 +101,9 @@ public class Grid {
 
 
         }
-
+        if (minesCount==0){
+            genMines();
+        }
 
     }
 
@@ -234,7 +237,7 @@ public class Grid {
                 int newCoordinateRow=cordinates[0] +coordinateIncrement[0];
                 int newCoordinateCol=cordinates[1] +coordinateIncrement[1];
 
-                if (checkIfNotMineAndNotVisibleAndNotNumbers(newCoordinateRow, newCoordinateCol)) {
+                if (checkIfNotMineAndNotVisibleAndNumbIsZero(newCoordinateRow, newCoordinateCol)) {
 
                     unFlag(newCoordinateRow, newCoordinateCol);
                     setNonMineTileVisible(newCoordinateRow, newCoordinateCol);
@@ -247,7 +250,7 @@ public class Grid {
                 }
 
             }
-//            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0] - 1, cordinates[1])) {
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0] - 1, cordinates[1])) {
 //                unFlag(cordinates[0] - 1, cordinates[1]);
 //                setNonMineTileVisible(cordinates[0] - 1, cordinates[1]);
 //                queue.add(new int[]{cordinates[0] - 1, cordinates[1]});
@@ -257,7 +260,7 @@ public class Grid {
 //
 //            }
 //
-//            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0] + 1, cordinates[1])) {
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0] + 1, cordinates[1])) {
 //                unFlag(cordinates[0] + 1, cordinates[1]);
 //                setNonMineTileVisible(cordinates[0] + 1, cordinates[1]);
 //                queue.add(new int[]{cordinates[0] + 1, cordinates[1]});
@@ -267,7 +270,7 @@ public class Grid {
 //            }
 //
 //
-//            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0], cordinates[1] - 1)) {
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0], cordinates[1] - 1)) {
 //                unFlag(cordinates[0], cordinates[1] - 1);
 //                setNonMineTileVisible(cordinates[0], cordinates[1] - 1);
 //                queue.add(new int[]{cordinates[0], cordinates[1] - 1});
@@ -278,7 +281,7 @@ public class Grid {
 //            }
 //
 //
-//            if (checkIfNotMineAndNotVisibleAndNotNumbers(cordinates[0], cordinates[1] + 1)) {
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0], cordinates[1] + 1)) {
 //                unFlag(cordinates[0], cordinates[1] + 1);
 //                setNonMineTileVisible(cordinates[0], cordinates[1] + 1);
 //                queue.add(new int[]{cordinates[0], cordinates[1] + 1});
@@ -295,14 +298,9 @@ public class Grid {
 
     }
 
-    private boolean checkIfNotMineAndNotVisibleAndNotNumbers(int tempRow, int tempCol) {
+    private boolean checkIfNotMineAndNotVisibleAndNumbIsZero(int tempRow, int tempCol) {
 
-        if (checkIfNotMineAndNotVisible(tempRow,tempCol)&& grid[tempRow][tempCol].getValue() == 0) {
-            return true;
-
-
-        }
-        return false;
+       return checkIfNotMineAndNotVisible(tempRow,tempCol)&& grid[tempRow][tempCol].getValue() == 0;
     }
     private boolean checkIfNotMineAndNotVisible(int tempRow, int tempCol) {
 
