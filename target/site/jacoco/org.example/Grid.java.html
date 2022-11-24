@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Grid.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Minesweeper2</a> &gt; <a href="index.source.html" class="el_package">org.example</a> &gt; <span class="el_source">Grid.java</span></div><h1>Grid.java</h1><pre class="source lang-java linenums">package org.example;
+
+import java.awt.*;
+import java.util.*;
+
+public class Grid {
+    private final Tile[][] grid;
+    private final int row;
+    private final int col;
+<span class="nc" id="L10">    private final Set&lt;Point&gt; emptyPos = new HashSet&lt;Point&gt;();// holds the empty position and when size is 0 game won</span>
+
+<span class="nc" id="L12">    public Grid(int row, int col) {</span>
+<span class="nc" id="L13">        this.row = row;</span>
+<span class="nc" id="L14">        this.col = col;</span>
+<span class="nc" id="L15">        grid = new Tile[row][col];</span>
+<span class="nc" id="L16">        initialize();</span>
+        // initialize grid
+
+
+<span class="nc" id="L20">    }</span>
+
+    //iff the tile is not visible then you can flag it
+    public void flag(int rowTemp, int colTemp) {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        if (!grid[rowTemp][colTemp].getisVisible()) {</span>
+<span class="nc" id="L25">            grid[rowTemp][colTemp].setisFlagged(true);</span>
+        }
+<span class="nc" id="L27">    }</span>
+
+    public boolean getIsFlagged(int rowTemp, int colTemp) {
+
+<span class="nc" id="L31">        return grid[rowTemp][colTemp].getisFlagged();</span>
+    }
+
+    // removing flag - so you can make tile visible later
+    public void unFlag(int rowTemp, int colTemp) {
+<span class="nc" id="L36">        grid[rowTemp][colTemp].setisFlagged(false);</span>
+<span class="nc" id="L37">    }</span>
+
+    //initializes 2d array with tiles which have no mines
+    private void initialize() {
+
+
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        for (int rowI = 0; rowI &lt; row; rowI++) {</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            for (int colI = 0; colI &lt; col; colI++) {</span>
+
+<span class="nc" id="L47">                grid[rowI][colI] = new Tile(0);</span>
+            }
+
+
+        }
+
+<span class="nc" id="L53">    }</span>
+
+    //once you loose then all mines are displayed
+    public void showAllMines() {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        for (int rowI = 0; rowI &lt; row; rowI++) {</span>
+
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            for (int colI = 0; colI &lt; col; colI++) {</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                if (grid[rowI][colI].getisMine()) {</span>
+<span class="nc" id="L61">                    unFlag(rowI,colI);</span>
+<span class="nc" id="L62">                    setTilesVisible(rowI, colI);</span>
+
+                }
+
+            }
+
+
+        }
+
+
+<span class="nc" id="L72">    }</span>
+
+    //there are no mines when first move is made
+    // then the mines are generated and numbers and the empty position set is added to
+    public void firstMoveSetup(int tempRow, int tempCol) {
+<span class="nc" id="L77">        grid[tempRow][tempCol].setisVisible(true);</span>
+<span class="nc" id="L78">        genMines();</span>
+<span class="nc" id="L79">        generateNumbers();</span>
+<span class="nc" id="L80">        populateEmpties();</span>
+<span class="nc" id="L81">        setTilesVisible(tempRow, tempCol);// insures if first pos has no mines or numbers all adjacent empty pos are revieled</span>
+<span class="nc" id="L82">    }</span>
+
+    // randomly generates mines with the chance of 20 percent
+    private void genMines() {
+<span class="nc" id="L86">        int minesCount=0;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (int rowI = 0; rowI &lt; row; rowI++) {</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            for (int colI = 0; colI &lt; col; colI++) {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                if (!grid[rowI][colI].getisVisible()) {</span>
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                    if (Math.random() &lt;= 0.05) {</span>
+<span class="nc" id="L93">                        grid[rowI][colI].setisMine(true);</span>
+<span class="nc" id="L94">                        minesCount++;</span>
+
+                    }
+                }
+
+
+            }
+
+
+        }
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (minesCount==0){</span>
+<span class="nc" id="L105">            genMines();</span>
+        }
+
+<span class="nc" id="L108">    }</span>
+
+    // checks all positions to get surrounding number of mines and sets the value in tile
+    private void generateNumbers() {
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (int rowI = 0; rowI &lt; row; rowI++) {</span>
+
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            for (int colI = 0; colI &lt; col; colI++) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                if (!grid[rowI][colI].getisMine()) {</span>
+<span class="nc" id="L116">                    int minesCount = 0;</span>
+<span class="nc bnc" id="L117" title="All 6 branches missed.">                    if (checkIfInIndex(rowI + 1, row) &amp;&amp; checkIfInIndex(colI, col) &amp;&amp; grid[rowI + 1][colI].getisMine()) {</span>
+
+<span class="nc" id="L119">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L121" title="All 6 branches missed.">                    if (checkIfInIndex(rowI - 1, row) &amp;&amp; checkIfInIndex(colI, col) &amp;&amp; grid[rowI - 1][colI].getisMine()) {</span>
+
+<span class="nc" id="L123">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L125" title="All 6 branches missed.">                    if (checkIfInIndex(rowI, row) &amp;&amp; checkIfInIndex(colI - 1, col) &amp;&amp; grid[rowI][colI - 1].getisMine()) {</span>
+
+<span class="nc" id="L127">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L129" title="All 6 branches missed.">                    if (checkIfInIndex(rowI, row) &amp;&amp; checkIfInIndex(colI + 1, col) &amp;&amp; grid[rowI][colI + 1].getisMine()) {</span>
+
+<span class="nc" id="L131">                        minesCount++;</span>
+                    }//here
+<span class="nc bnc" id="L133" title="All 6 branches missed.">                    if (checkIfInIndex(rowI + 1, row) &amp;&amp; checkIfInIndex(colI + 1, col) &amp;&amp; grid[rowI + 1][colI + 1].getisMine()) {</span>
+
+<span class="nc" id="L135">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L137" title="All 6 branches missed.">                    if (checkIfInIndex(rowI - 1, row) &amp;&amp; checkIfInIndex(colI - 1, col) &amp;&amp; grid[rowI - 1][colI - 1].getisMine()) {</span>
+
+<span class="nc" id="L139">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L141" title="All 6 branches missed.">                    if (checkIfInIndex(rowI - 1, row) &amp;&amp; checkIfInIndex(colI + 1, col) &amp;&amp; grid[rowI - 1][colI + 1].getisMine()) {</span>
+
+<span class="nc" id="L143">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L145" title="All 6 branches missed.">                    if (checkIfInIndex(rowI + 1, row) &amp;&amp; checkIfInIndex(colI - 1, col) &amp;&amp; grid[rowI + 1][colI - 1].getisMine()) {</span>
+
+<span class="nc" id="L147">                        minesCount++;</span>
+                    }
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                    if (minesCount &gt; 0) {</span>
+<span class="nc" id="L150">                        grid[rowI][colI].setValue(minesCount);</span>
+
+                    }
+
+                }
+
+            }
+
+
+        }
+
+<span class="nc" id="L161">    }</span>
+
+    // populating set of empty position -ie not mines
+    //used to see if game has been won
+    private void populateEmpties() {
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        for (int rowI = 0; rowI &lt; row; rowI++) {</span>
+
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            for (int colI = 0; colI &lt; col; colI++) {</span>
+<span class="nc bnc" id="L170" title="All 4 branches missed.">                if (!grid[rowI][colI].getisMine() &amp;&amp; !grid[rowI][colI].getisVisible()) {</span>
+<span class="nc" id="L171">                    emptyPos.add(new Point(rowI, colI));</span>
+                }
+
+            }
+
+
+        }
+<span class="nc" id="L178">    }</span>
+
+    // set method to make tiles visible treated differently depending on if there is a mine, number&gt;0, 0
+    public void setTilesVisible(int tempRow, int tempCol) {
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (grid[tempRow][tempCol].getisMine()) {</span>
+<span class="nc" id="L183">            grid[tempRow][tempCol].setisVisible(true);</span>
+
+        } else {
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            if (grid[tempRow][tempCol].getValue() == 0) {</span>
+<span class="nc" id="L187">                displayEmpties(tempRow, tempCol);// will set this pos to visible aswell</span>
+            } else {
+<span class="nc" id="L189">                setNonMineTileVisible(tempRow, tempCol);</span>
+            }
+        }
+
+<span class="nc" id="L193">    }</span>
+
+    public boolean isMine(int tempRow, int tempCol) {
+<span class="nc" id="L196">        return grid[tempRow][tempCol].getisMine();</span>
+
+
+    }
+
+    public boolean gameWon() {
+
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        return emptyPos.size() == 0;</span>
+    }
+
+    //sets to visible and removes from set
+    private void setNonMineTileVisible(int tempRow, int tempCol) {
+
+<span class="nc" id="L209">        grid[tempRow][tempCol].setisVisible(true);</span>
+
+<span class="nc" id="L211">        emptyPos.remove(new Point(tempRow, tempCol));</span>
+
+<span class="nc" id="L213">    }</span>
+
+    private void displayEmpties(int tempRow, int tempCol) {
+
+
+<span class="nc" id="L218">        ArrayList&lt;int[]&gt; emptyToCheck = new ArrayList&lt;int[]&gt;();</span>
+
+
+<span class="nc" id="L221">        emptyToCheck.add(new int[]{tempRow, tempCol});</span>
+<span class="nc" id="L222">        setNonMineTileVisible(tempRow, tempCol);</span>
+        //goes through all adacent tiles and addes them on to list if there not visible and dont have mine or number &gt;0
+        // used to display all empty tiles
+<span class="nc" id="L225">        ArrayList&lt;int[]&gt; coordinateIncrementList = new ArrayList&lt;int[]&gt;();</span>
+
+<span class="nc" id="L227">        coordinateIncrementList.add(new int[]{-1,0});</span>
+<span class="nc" id="L228">        coordinateIncrementList.add(new int[]{1,0});</span>
+<span class="nc" id="L229">        coordinateIncrementList.add(new int[]{0,-1});</span>
+<span class="nc" id="L230">        coordinateIncrementList.add(new int[]{0,1});</span>
+        //added the list so dont need 4 repeat if statements
+<span class="nc bnc" id="L232" title="All 2 branches missed.">        while (!emptyToCheck.isEmpty()) {</span>
+<span class="nc" id="L233">            int[] cordinates = emptyToCheck.get(0);</span>
+
+<span class="nc bnc" id="L235" title="All 2 branches missed.">            for (int[] coordinateIncrement:coordinateIncrementList){</span>
+
+<span class="nc" id="L237">                int newCoordinateRow=cordinates[0] +coordinateIncrement[0];</span>
+<span class="nc" id="L238">                int newCoordinateCol=cordinates[1] +coordinateIncrement[1];</span>
+
+<span class="nc bnc" id="L240" title="All 2 branches missed.">                if (checkIfNotMineAndNotVisibleAndNumbIsZero(newCoordinateRow, newCoordinateCol)) {</span>
+
+<span class="nc" id="L242">                    unFlag(newCoordinateRow, newCoordinateCol);</span>
+<span class="nc" id="L243">                    setNonMineTileVisible(newCoordinateRow, newCoordinateCol);</span>
+<span class="nc" id="L244">                    emptyToCheck.add(new int[]{newCoordinateRow, newCoordinateCol});</span>
+
+<span class="nc bnc" id="L246" title="All 2 branches missed.">                }else if (checkIfNotMineAndNotVisible(newCoordinateRow, newCoordinateCol)){</span>
+<span class="nc" id="L247">                    unFlag(newCoordinateRow, newCoordinateCol);</span>
+<span class="nc" id="L248">                    setNonMineTileVisible(newCoordinateRow, newCoordinateCol);</span>
+
+                }
+
+<span class="nc" id="L252">            }</span>
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0] - 1, cordinates[1])) {
+//                unFlag(cordinates[0] - 1, cordinates[1]);
+//                setNonMineTileVisible(cordinates[0] - 1, cordinates[1]);
+//                queue.add(new int[]{cordinates[0] - 1, cordinates[1]});
+//
+//            }else if (checkIfNotMineAndNotVisible(cordinates[0] - 1, cordinates[1])){
+//                numberedCells.add(new int[]{cordinates[0] - 1, cordinates[1]} );
+//
+//            }
+//
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0] + 1, cordinates[1])) {
+//                unFlag(cordinates[0] + 1, cordinates[1]);
+//                setNonMineTileVisible(cordinates[0] + 1, cordinates[1]);
+//                queue.add(new int[]{cordinates[0] + 1, cordinates[1]});
+//            }else if (checkIfNotMineAndNotVisible(cordinates[0] + 1, cordinates[1])){
+//                numberedCells.add(new int[]{cordinates[0] + 1, cordinates[1]} );
+//
+//            }
+//
+//
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0], cordinates[1] - 1)) {
+//                unFlag(cordinates[0], cordinates[1] - 1);
+//                setNonMineTileVisible(cordinates[0], cordinates[1] - 1);
+//                queue.add(new int[]{cordinates[0], cordinates[1] - 1});
+//
+//            }else if (checkIfNotMineAndNotVisible(cordinates[0], cordinates[1] - 1)){
+//                numberedCells.add(new int[]{cordinates[0], cordinates[1] - 1} );
+//
+//            }
+//
+//
+//            if (checkIfNotMineAndNotVisibleAndNumbIsZero(cordinates[0], cordinates[1] + 1)) {
+//                unFlag(cordinates[0], cordinates[1] + 1);
+//                setNonMineTileVisible(cordinates[0], cordinates[1] + 1);
+//                queue.add(new int[]{cordinates[0], cordinates[1] + 1});
+//            }else if (checkIfNotMineAndNotVisible(cordinates[0], cordinates[1] + 1)){
+//                numberedCells.add(new int[]{cordinates[0], cordinates[1] + 1} );
+//
+//            }
+
+
+<span class="nc" id="L294">            emptyToCheck.remove(0);</span>
+
+<span class="nc" id="L296">        }</span>
+
+
+<span class="nc" id="L299">    }</span>
+
+    private boolean checkIfNotMineAndNotVisibleAndNumbIsZero(int tempRow, int tempCol) {
+
+<span class="nc bnc" id="L303" title="All 4 branches missed.">       return checkIfNotMineAndNotVisible(tempRow,tempCol)&amp;&amp; grid[tempRow][tempCol].getValue() == 0;</span>
+    }
+    private boolean checkIfNotMineAndNotVisible(int tempRow, int tempCol) {
+
+<span class="nc bnc" id="L307" title="All 6 branches missed.">        if (checkIfInIndex(tempRow, row) &amp;&amp; checkIfInIndex(tempCol, col) &amp;&amp; !grid[tempRow][tempCol].getisMine()</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">                &amp;&amp; !grid[tempRow][tempCol].getisVisible() ) {</span>
+<span class="nc" id="L309">            return true;</span>
+
+
+        }
+<span class="nc" id="L313">        return false;</span>
+    }
+
+    private boolean checkIfInIndex(int val, int indexMax) {
+        //avoiding index out of bounds
+
+<span class="nc bnc" id="L319" title="All 4 branches missed.">        return val &gt;= 0 &amp;&amp; val &lt; indexMax;</span>
+    }
+
+    public void printAll() {
+<span class="nc" id="L323">        System.out.print(&quot;   &quot;);</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        for (int colI = 0; colI &lt; col; colI++) {</span>
+<span class="nc" id="L325">            System.out.print(colI + &quot; &quot;);</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">            if (colI&gt;9){</span>
+<span class="nc" id="L327">                System.out.print(&quot; &quot;);</span>
+            }else {
+<span class="nc" id="L329">                System.out.print(&quot;  &quot;);</span>
+            }
+
+
+        }
+<span class="nc" id="L334">        System.out.println();</span>
+<span class="nc bnc" id="L335" title="All 2 branches missed.">        for (int rowI = 0; rowI &lt; row; rowI++) {</span>
+<span class="nc" id="L336">            System.out.print(rowI + &quot;|&quot;);</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">            for (int colI = 0; colI &lt; col; colI++) {</span>
+<span class="nc bnc" id="L338" title="All 4 branches missed.">                if (colI==0 &amp;&amp; rowI&lt;10){</span>
+<span class="nc" id="L339">                    System.out.print(&quot; &quot;);</span>
+                }
+<span class="nc" id="L341">                grid[rowI][colI].print();</span>
+<span class="nc" id="L342">                System.out.print(&quot;,  &quot;);</span>
+            }
+
+<span class="nc" id="L345">            System.out.println();</span>
+
+        }
+<span class="nc" id="L348">        System.out.println();</span>
+<span class="nc" id="L349">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
